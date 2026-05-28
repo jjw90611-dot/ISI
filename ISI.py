@@ -224,6 +224,15 @@ st.markdown("""
     }
     input, textarea { color: #ffffff !important; font-size: 16px !important; }
     
+    /* ==========================================
+       [수정됨] Selectbox (드롭다운) 글씨 색상 하얗고 선명하게 수정
+       ========================================== */
+    div[data-baseweb="select"] span { color: #ffffff !important; font-size: 16px !important; font-weight: bold !important; }
+    div[role="listbox"] ul { background-color: #1e293b !important; }
+    div[role="listbox"] li { color: #ffffff !important; font-size: 15px !important; }
+    div[role="listbox"] li:hover { background-color: #00A3E0 !important; color: #ffffff !important; }
+    label { color: #f8fafc !important; font-weight: bold !important; font-size: 15px !important; }
+
     div[data-testid="stButton"] > button, div[data-testid="stFormSubmitButton"] > button {
         background: linear-gradient(45deg, #00A3E0, #003876) !important; 
         color: #ffffff !important; font-weight: 900 !important; font-size: 16px !important; 
@@ -254,27 +263,17 @@ st.markdown("""
        데스크탑 화면은 건드리지 않고, 휴대폰에서만 가독성 최적화
        ========================================== */
     @media (max-width: 768px) {
-        /* 제목 크기 및 줄간격 조정 */
         .neon-title { font-size: 28px !important; line-height: 1.4 !important; margin-top: 10px !important; }
         .sub-title { font-size: 14px !important; line-height: 1.6 !important; padding: 0 10px !important; word-break: keep-all !important; }
-        
-        /* 문제 및 AI 피드백 박스 가독성 향상 (엔터 효과 및 단어 잘림 방지) */
         .question-box { font-size: 16px !important; padding: 15px !important; line-height: 1.7 !important; word-break: keep-all !important; }
         .ai-box { font-size: 15px !important; padding: 15px !important; line-height: 1.8 !important; word-break: keep-all !important; }
-        
-        /* 아코디언 및 탭 메뉴 모바일 최적화 */
         [data-testid="stExpander"] summary p { font-size: 15px !important; line-height: 1.5 !important; word-break: keep-all !important; }
         [data-testid="stExpanderDetails"] p, [data-testid="stExpanderDetails"] li { font-size: 14px !important; line-height: 1.7 !important; word-break: keep-all !important; }
         .stTabs [data-baseweb="tab"] { font-size: 13px !important; padding: 8px 10px !important; }
-        
-        /* 링크 버튼 모바일 최적화 */
         .link-btn-container { font-size: 15px !important; padding: 15px !important; word-break: keep-all !important; line-height: 1.5 !important; }
-        
-        /* 모바일에서만 보이는 줄바꿈 클래스 활성화 */
         .mobile-br { display: block !important; content: ""; margin-top: 5px; }
     }
 
-    /* 데스크탑에서는 모바일 전용 줄바꿈 숨김 */
     @media (min-width: 769px) {
         .mobile-br { display: none !important; }
     }
@@ -293,7 +292,6 @@ if 'cheer_msg' not in st.session_state: st.session_state['cheer_msg'] = random.c
 # ==========================================
 # [화면 구성] 메인 학습 화면
 # ==========================================
-# 모바일에서만 줄바꿈이 되도록 <br class='mobile-br'> 적용
 st.markdown("<div class='neon-title'>POSCO FUTURE M<br>산업안전지도사 AI 센터</div>", unsafe_allow_html=True)
 st.markdown("<div class='sub-title'>기계안전공학 완벽 대비! <br class='mobile-br'>30년 차 출제위원 AI가 <br class='mobile-br'>당신의 답안을 첨삭합니다.</div>", unsafe_allow_html=True)
 
