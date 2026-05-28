@@ -23,7 +23,6 @@ except:
 # ==========================================
 conn = sqlite3.connect('safety_study.db', check_same_thread=False)
 c = conn.cursor()
-# 로그인 기능이 없어졌으므로 users 테이블은 더 이상 생성하지 않습니다.
 c.execute('''CREATE TABLE IF NOT EXISTS study_records (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, date TEXT, question TEXT, user_answer TEXT, ai_feedback TEXT)''')
 conn.commit()
 
@@ -96,8 +95,9 @@ st.markdown("""
     .stTabs [data-baseweb="tab"] { background-color: rgba(255,255,255,0.1); border-radius: 8px 8px 0 0; padding: 10px 15px; color: #cbd5e1; font-size: 14px; }
     .stTabs [aria-selected="true"] { background-color: rgba(0, 163, 224, 0.3); color: #7dd3fc !important; border-bottom: 3px solid #00A3E0; font-weight: bold; }
 
+    /* 아코디언(Expander) 디자인 수정 - 클릭해도 제목이 노란색으로 잘 보이게 설정 */
     [data-testid="stExpander"] { background-color: rgba(30, 41, 59, 0.8) !important; border: 1px solid #00A3E0 !important; border-radius: 10px !important; }
-    [data-testid="stExpander"] summary p { color: #ffffff !important; font-weight: bold !important; font-size: 16px !important; }
+    [data-testid="stExpander"] summary p { color: #fde047 !important; font-weight: bold !important; font-size: 16px !important; }
     [data-testid="stExpanderDetails"] { background-color: transparent !important; }
     [data-testid="stExpanderDetails"] p, [data-testid="stExpanderDetails"] li { color: #f8fafc !important; font-size: 15px !important; line-height: 1.6 !important; }
 
@@ -206,12 +206,11 @@ with tab2:
                             "Content-Type": "application/json"
                         }
                         data = {
-                            "model": "llama-3.1-70b-versatile", # 최신 안정화 모델로 변경
+                            "model": "llama-3.3-70b-versatile", # 최신 지원 모델로 변경 완료
                             "messages": [{"role": "user", "content": prompt}],
                             "temperature": 0.3
                         }
                         
-                        # timeout 추가 및 에러 상세 출력 강화
                         response = requests.post(url, headers=headers, json=data, timeout=15)
                         
                         if response.status_code == 200:
@@ -219,14 +218,12 @@ with tab2:
                             st.session_state['ai_feedback'] = feedback
                             
                             now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-                            # 로그인 기능이 없으므로 user_id는 '지연'으로 고정하여 저장합니다.
                             c.execute("INSERT INTO study_records (user_id, date, question, user_answer, ai_feedback) VALUES (?, ?, ?, ?, ?)", 
                                       ("지연", now, st.session_state['current_question'], user_answer, feedback))
                             conn.commit()
                         else:
                             st.error(f"🚨 API 호출 오류가 발생했습니다. (상태 코드: {response.status_code})")
                             st.error(f"상세 에러 내용: {response.text}")
-                            st.info("💡 해결 방법: Streamlit Secrets에 입력한 GROQ_API_KEY가 정확한지 확인해주세요.")
                     except Exception as e:
                         st.error(f"🚨 통신 오류가 발생했습니다: {e}")
                         
@@ -241,7 +238,6 @@ with tab2:
 with tab3:
     st.markdown("### 📚 내가 작성한 답안 및 AI 피드백 기록")
     
-    # '지연' 사용자의 기록만 불러옵니다.
     c.execute("SELECT id, date, question, user_answer, ai_feedback FROM study_records WHERE user_id=? ORDER BY id DESC", ("지연",))
     records = c.fetchall()
     
