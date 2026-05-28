@@ -542,6 +542,6 @@ with tab4:
 st.markdown("""
 <hr style="border-color: rgba(255,255,255,0.1); margin-top: 40px;">
 <div style="text-align: center; color: #64748b; font-size: 12px;">
-    © POSCO FUTURE M Assistant. 지연님의 산업안전지도사 합격을 진심으로 기원합니다!
+    © Eunho's Family Assistant. 지연님의 산업안전지도사 합격을 진심으로 기원합니다!
 </div>
 """, unsafe_allow_html=True)
