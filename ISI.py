@@ -47,7 +47,20 @@ QUESTIONS = [
 ]
 
 # ==========================================
-# [CSS] 전문적이고 깔끔한 UI 디자인
+# [응원 메시지 리스트]
+# ==========================================
+ENCOURAGEMENTS = [
+    "힘내면 무조건 할 수 있다! 포기하지 마세요. 💪",
+    "사랑하는 많은 사람들이 당신의 도전을 진심으로 응원합니다. ❤️",
+    "잘할 수 있다 지연아! 우리는 늘 널 응원해! ✨",
+    "오늘 흘린 땀방울이 합격의 기쁨으로 돌아올 거예요. 아자쓰! 🔥",
+    "조금만 더 힘내요! 합격증을 손에 쥐는 그날까지 화이팅! 🍀",
+    "지연아, 넌 충분히 해낼 수 있는 사람이야. 자신감을 가져! 🌟",
+    "지치고 힘들 땐 잠시 쉬어가도 괜찮아. 넌 이미 너무 잘하고 있어! 💛"
+]
+
+# ==========================================
+# [CSS] 전문적이고 깔끔한 UI 디자인 (_arrow_right 오류 수정)
 # ==========================================
 st.markdown("""
 <style>
@@ -57,7 +70,8 @@ st.markdown("""
         font-weight: normal; font-style: normal;
     }
 
-    .stApp, p, span, div, h1, h2, h3, label, input, textarea, button {
+    /* span, div에 !important를 제거하여 Streamlit 내부 아이콘(화살표 등)이 깨지지 않도록 수정 */
+    .stApp, p, h1, h2, h3, label, input, textarea, button {
         font-family: 'SeoulNamsan', sans-serif !important;
     }
     .stApp { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #f8fafc; }
@@ -101,6 +115,7 @@ if 'logged_in' not in st.session_state: st.session_state['logged_in'] = False
 if 'user_id' not in st.session_state: st.session_state['user_id'] = ""
 if 'current_question' not in st.session_state: st.session_state['current_question'] = ""
 if 'ai_feedback' not in st.session_state: st.session_state['ai_feedback'] = ""
+if 'cheer_msg' not in st.session_state: st.session_state['cheer_msg'] = random.choice(ENCOURAGEMENTS)
 
 # ==========================================
 # [화면 구성] 1. 로그인 화면
@@ -121,6 +136,7 @@ if not st.session_state['logged_in']:
                 if c.fetchone():
                     st.session_state['logged_in'] = True
                     st.session_state['user_id'] = login_id
+                    st.session_state['cheer_msg'] = random.choice(ENCOURAGEMENTS) # 로그인 시 새로운 응원 메시지
                     st.rerun()
                 else:
                     st.error("정보가 일치하지 않습니다.")
@@ -145,6 +161,13 @@ if not st.session_state['logged_in']:
 # ==========================================
 else:
     st.markdown(f"<div class='neon-title' style='font-size: 30px;'>{st.session_state['user_id']} 예비 지도사님, 환영합니다!</div>", unsafe_allow_html=True)
+    
+    # 💌 따뜻한 응원 메시지 박스
+    st.markdown(f"""
+    <div style="background: rgba(255, 193, 7, 0.15); border-left: 5px solid #ffc107; padding: 15px; border-radius: 10px; margin-bottom: 25px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+        <span style="font-size: 18px; font-weight: bold; color: #fde047;">"{st.session_state['cheer_msg']}"</span>
+    </div>
+    """, unsafe_allow_html=True)
     
     col_btn1, col_btn2, col_btn3 = st.columns([3, 1, 1])
     with col_btn3:
@@ -198,6 +221,7 @@ else:
         if st.button("🎲 새로운 기출문제 뽑기", use_container_width=True):
             st.session_state['current_question'] = random.choice(QUESTIONS)
             st.session_state['ai_feedback'] = ""
+            st.session_state['cheer_msg'] = random.choice(ENCOURAGEMENTS) # 문제 뽑을 때마다 응원 멘트 변경
             st.rerun()
             
         if st.session_state['current_question']:
@@ -285,6 +309,6 @@ else:
 st.markdown("""
 <hr style="border-color: rgba(255,255,255,0.1); margin-top: 40px;">
 <div style="text-align: center; color: #64748b; font-size: 12px;">
-    © POSCO FUTURE M Assistant. 산업안전지도사 합격을 기원합니다!
+    © POSCO FUTURE M Assistant. 지연님의 산업안전지도사 합격을 진심으로 기원합니다!
 </div>
 """, unsafe_allow_html=True)
