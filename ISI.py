@@ -198,10 +198,11 @@ ENCOURAGEMENTS = [
 ]
 
 # ==========================================
-# [CSS] 전역 서울남산체 적용 및 UI 디자인
+# [CSS] 전역 서울남산체 적용 및 반응형 UI 디자인
 # ==========================================
 st.markdown("""
 <style>
+    /* 기본 폰트 및 데스크탑 UI (기존 완벽한 상태 유지) */
     @font-face {
         font-family: 'SeoulNamsan';
         src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/SeoulNamsanM.woff') format('woff');
@@ -247,6 +248,36 @@ st.markdown("""
     .ai-box { background: rgba(16, 185, 129, 0.1); border-left: 5px solid #10b981; padding: 20px; border-radius: 10px; font-size: 16px; line-height: 1.6; margin-top: 20px; white-space: pre-wrap; }
     
     .link-btn-container:hover { transform: translateY(-2px); }
+
+    /* ==========================================
+       [모바일 전용 반응형 CSS] 
+       데스크탑 화면은 건드리지 않고, 휴대폰에서만 가독성 최적화
+       ========================================== */
+    @media (max-width: 768px) {
+        /* 제목 크기 및 줄간격 조정 */
+        .neon-title { font-size: 28px !important; line-height: 1.4 !important; margin-top: 10px !important; }
+        .sub-title { font-size: 14px !important; line-height: 1.6 !important; padding: 0 10px !important; word-break: keep-all !important; }
+        
+        /* 문제 및 AI 피드백 박스 가독성 향상 (엔터 효과 및 단어 잘림 방지) */
+        .question-box { font-size: 16px !important; padding: 15px !important; line-height: 1.7 !important; word-break: keep-all !important; }
+        .ai-box { font-size: 15px !important; padding: 15px !important; line-height: 1.8 !important; word-break: keep-all !important; }
+        
+        /* 아코디언 및 탭 메뉴 모바일 최적화 */
+        [data-testid="stExpander"] summary p { font-size: 15px !important; line-height: 1.5 !important; word-break: keep-all !important; }
+        [data-testid="stExpanderDetails"] p, [data-testid="stExpanderDetails"] li { font-size: 14px !important; line-height: 1.7 !important; word-break: keep-all !important; }
+        .stTabs [data-baseweb="tab"] { font-size: 13px !important; padding: 8px 10px !important; }
+        
+        /* 링크 버튼 모바일 최적화 */
+        .link-btn-container { font-size: 15px !important; padding: 15px !important; word-break: keep-all !important; line-height: 1.5 !important; }
+        
+        /* 모바일에서만 보이는 줄바꿈 클래스 활성화 */
+        .mobile-br { display: block !important; content: ""; margin-top: 5px; }
+    }
+
+    /* 데스크탑에서는 모바일 전용 줄바꿈 숨김 */
+    @media (min-width: 769px) {
+        .mobile-br { display: none !important; }
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -262,12 +293,13 @@ if 'cheer_msg' not in st.session_state: st.session_state['cheer_msg'] = random.c
 # ==========================================
 # [화면 구성] 메인 학습 화면
 # ==========================================
-st.markdown("<div class='neon-title'>Eunho's Family<br>산업안전지도사 AI 센터</div>", unsafe_allow_html=True)
-st.markdown("<div class='sub-title'>기계안전공학 완벽 대비! 30년 차 출제위원 AI가 당신의 답안을 첨삭합니다.</div>", unsafe_allow_html=True)
+# 모바일에서만 줄바꿈이 되도록 <br class='mobile-br'> 적용
+st.markdown("<div class='neon-title'>POSCO FUTURE M<br>산업안전지도사 AI 센터</div>", unsafe_allow_html=True)
+st.markdown("<div class='sub-title'>기계안전공학 완벽 대비! <br class='mobile-br'>30년 차 출제위원 AI가 <br class='mobile-br'>당신의 답안을 첨삭합니다.</div>", unsafe_allow_html=True)
 
 st.markdown(f"""
 <div style="background: rgba(255, 193, 7, 0.15); border-left: 5px solid #ffc107; padding: 15px; border-radius: 10px; margin-bottom: 25px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
-    <span style="font-size: 18px; font-weight: bold; color: #fde047;">"{st.session_state['cheer_msg']}"</span>
+    <span style="font-size: 18px; font-weight: bold; color: #fde047; word-break: keep-all;">"{st.session_state['cheer_msg']}"</span>
 </div>
 """, unsafe_allow_html=True)
 
@@ -379,7 +411,6 @@ with tab_new:
     if st.button("🚀 선택한 테마로 기출 변형 문제 출제하기", use_container_width=True):
         with st.spinner("AI 출제위원이 역대 기출문제를 분석하여 변형 문제를 출제 중입니다... ⏳"):
             try:
-                # 선택한 테마의 역대 기출문제 리스트를 문자열로 변환
                 past_qs_text = "\n".join([f"- {q}" for q in THEME_PAST_QUESTIONS[selected_theme]])
                 
                 prompt = f"""
@@ -475,8 +506,8 @@ with tab3:
             r_id, date, q, ans, ai = record
             with st.expander(f"📝 {date} 학습 기록 (클릭하여 펼치기)"):
                 st.markdown(f"**Q. {q}**")
-                st.markdown(f"<div style='background:rgba(255,255,255,0.1); padding:10px; border-radius:5px;'><b>나의 답안:</b><br>{ans}</div>", unsafe_allow_html=True)
-                st.markdown(f"<div style='background:rgba(16,185,129,0.1); padding:10px; border-radius:5px; margin-top:10px;'><b>AI 피드백:</b><br>{ai}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='background:rgba(255,255,255,0.1); padding:10px; border-radius:5px; word-break: keep-all;'><b>나의 답안:</b><br>{ans}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='background:rgba(16,185,129,0.1); padding:10px; border-radius:5px; margin-top:10px; word-break: keep-all;'><b>AI 피드백:</b><br>{ai}</div>", unsafe_allow_html=True)
                 
                 if st.button("🗑️ 이 기록 삭제", key=f"del_{r_id}"):
                     c.execute("DELETE FROM study_records WHERE id=?", (r_id,))
@@ -494,7 +525,7 @@ with tab4:
     st.markdown("""
     <a href="https://asdfg.kr" target="_blank" style="text-decoration: none;">
         <div class="link-btn-container" style="background: linear-gradient(135deg, #00A3E0 0%, #003876 100%); padding: 18px; border-radius: 10px; text-align: center; color: white; font-weight: bold; font-size: 18px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0, 163, 224, 0.4); transition: transform 0.2s;">
-            ⚖️ 안전보건 법령 통합 검색 (asdfg.kr) 바로가기
+            ⚖️ 안전보건 법령 통합 검색 <br class='mobile-br'>(asdfg.kr) 바로가기
         </div>
     </a>
     """, unsafe_allow_html=True)
@@ -502,7 +533,7 @@ with tab4:
     st.markdown("""
     <a href="https://portal.kosha.or.kr/archive/resources/tech-support/revision/RevisionNoticePage" target="_blank" style="text-decoration: none;">
         <div class="link-btn-container" style="background: linear-gradient(135deg, #00B188 0%, #007A5E 100%); padding: 18px; border-radius: 10px; text-align: center; color: white; font-weight: bold; font-size: 18px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0, 177, 136, 0.4); transition: transform 0.2s;">
-            📗 KOSHA GUIDE (안전보건기술지침) 제·개정 공표 바로가기 
+            📗 KOSHA GUIDE (안전보건기술지침) <br class='mobile-br'>제·개정 공표 바로가기 
         </div>
     </a>
     """, unsafe_allow_html=True)
@@ -513,6 +544,6 @@ with tab4:
 st.markdown("""
 <hr style="border-color: rgba(255,255,255,0.1); margin-top: 40px;">
 <div style="text-align: center; color: #64748b; font-size: 12px;">
-    © Eunho's Family Assistant. 지연님의 산업안전지도사 합격을 진심으로 기원합니다!
+    © POSCO FUTURE M Assistant. 지연님의 산업안전지도사 합격을 진심으로 기원합니다!
 </div>
 """, unsafe_allow_html=True)
