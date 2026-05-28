@@ -292,7 +292,7 @@ if 'cheer_msg' not in st.session_state: st.session_state['cheer_msg'] = random.c
 # ==========================================
 # [화면 구성] 메인 학습 화면
 # ==========================================
-st.markdown("<div class='neon-title'>POSCO FUTURE M<br>산업안전지도사 AI 센터</div>", unsafe_allow_html=True)
+st.markdown("<div class='neon-title'>지연만을 위한<br>산업안전지도사 AI 센터</div>", unsafe_allow_html=True)
 st.markdown("<div class='sub-title'>기계안전공학 완벽 대비! <br class='mobile-br'>30년 차 출제위원 AI가 <br class='mobile-br'>당신의 답안을 첨삭합니다.</div>", unsafe_allow_html=True)
 
 st.markdown(f"""
