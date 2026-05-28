@@ -202,7 +202,7 @@ ENCOURAGEMENTS = [
 # ==========================================
 st.markdown("""
 <style>
-    /* 기본 폰트 및 데스크탑 UI (기존 완벽한 상태 유지) */
+    /* 기본 폰트 및 데스크탑 UI */
     @font-face {
         font-family: 'SeoulNamsan';
         src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/SeoulNamsanM.woff') format('woff');
@@ -219,18 +219,23 @@ st.markdown("""
 
     .stApp { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #f8fafc; }
     
-    div[data-baseweb="input"] > div, div[data-baseweb="textarea"] > div, div[data-baseweb="select"] > div {
+    div[data-baseweb="input"] > div, div[data-baseweb="textarea"] > div {
         background-color: #1e293b !important; border: 2px solid #00A3E0 !important; border-radius: 10px !important;
     }
     input, textarea { color: #ffffff !important; font-size: 16px !important; }
     
-    /* ==========================================
-       [수정됨] Selectbox (드롭다운) 글씨 색상 하얗고 선명하게 수정
-       ========================================== */
-    div[data-baseweb="select"] span { color: #ffffff !important; font-size: 16px !important; font-weight: bold !important; }
+    /* Selectbox (드롭다운) 글씨 색상 강제 흰색 적용 */
+    div[data-baseweb="select"] > div {
+        background-color: #1e293b !important; 
+        border: 2px solid #00A3E0 !important; 
+        border-radius: 10px !important;
+    }
+    div[data-baseweb="select"] * { color: #ffffff !important; font-weight: bold !important; }
+    div[data-baseweb="select"] svg { fill: #ffffff !important; }
     div[role="listbox"] ul { background-color: #1e293b !important; }
     div[role="listbox"] li { color: #ffffff !important; font-size: 15px !important; }
     div[role="listbox"] li:hover { background-color: #00A3E0 !important; color: #ffffff !important; }
+    
     label { color: #f8fafc !important; font-weight: bold !important; font-size: 15px !important; }
 
     div[data-testid="stButton"] > button, div[data-testid="stFormSubmitButton"] > button {
@@ -245,10 +250,41 @@ st.markdown("""
     .stTabs [data-baseweb="tab"] { background-color: rgba(255,255,255,0.1); border-radius: 8px 8px 0 0; padding: 10px 15px; color: #cbd5e1; font-size: 14px; }
     .stTabs [aria-selected="true"] { background-color: rgba(0, 163, 224, 0.3); color: #7dd3fc !important; border-bottom: 3px solid #00A3E0; font-weight: bold; }
 
-    [data-testid="stExpander"] { background-color: rgba(30, 41, 59, 0.8) !important; border: 1px solid #00A3E0 !important; border-radius: 10px !important; }
-    [data-testid="stExpander"] summary p { color: #fde047 !important; font-weight: bold !important; font-size: 16px !important; }
-    [data-testid="stExpanderDetails"] { background-color: transparent !important; }
-    [data-testid="stExpanderDetails"] p, [data-testid="stExpanderDetails"] li { color: #f8fafc !important; font-size: 15px !important; line-height: 1.6 !important; }
+    /* ==========================================
+       [수정됨] Expander (아코디언) 배경 강제 어둡게 설정
+       ========================================== */
+    [data-testid="stExpander"] { 
+        background-color: #1e293b !important; 
+        border: 1px solid #00A3E0 !important; 
+        border-radius: 10px !important; 
+        overflow: hidden !important;
+    }
+    /* 아코디언 제목 부분 배경을 확실히 어둡게 */
+    [data-testid="stExpander"] summary { 
+        background-color: #1e293b !important; 
+    }
+    [data-testid="stExpander"] summary:hover {
+        background-color: #0f172a !important; 
+    }
+    /* 아코디언 제목 글씨 (노란색 유지) */
+    [data-testid="stExpander"] summary p { 
+        color: #fde047 !important; 
+        font-weight: bold !important; 
+        font-size: 16px !important; 
+    }
+    /* 아코디언 화살표 아이콘 색상 */
+    [data-testid="stExpander"] svg {
+        fill: #fde047 !important; 
+    }
+    /* 아코디언 펼쳤을 때 내용 배경 및 글씨 */
+    [data-testid="stExpanderDetails"] { 
+        background-color: #1e293b !important; 
+    }
+    [data-testid="stExpanderDetails"] p, [data-testid="stExpanderDetails"] li { 
+        color: #f8fafc !important; 
+        font-size: 15px !important; 
+        line-height: 1.6 !important; 
+    }
 
     .neon-title { font-size: 40px; font-weight: 900; color: #ffffff; text-align: center; margin-top: 20px; margin-bottom: 10px; letter-spacing: 1px; text-shadow: 0 0 10px #00A3E0, 0 0 20px #00A3E0; }
     .sub-title { color: #94a3b8; font-size: 16px; margin-bottom: 30px; text-align: center; }
@@ -260,7 +296,6 @@ st.markdown("""
 
     /* ==========================================
        [모바일 전용 반응형 CSS] 
-       데스크탑 화면은 건드리지 않고, 휴대폰에서만 가독성 최적화
        ========================================== */
     @media (max-width: 768px) {
         .neon-title { font-size: 28px !important; line-height: 1.4 !important; margin-top: 10px !important; }
@@ -292,7 +327,7 @@ if 'cheer_msg' not in st.session_state: st.session_state['cheer_msg'] = random.c
 # ==========================================
 # [화면 구성] 메인 학습 화면
 # ==========================================
-st.markdown("<div class='neon-title'>지연만을 위한<br>산업안전지도사 AI 센터</div>", unsafe_allow_html=True)
+st.markdown("<div class='neon-title'>POSCO FUTURE M<br>산업안전지도사 AI 센터</div>", unsafe_allow_html=True)
 st.markdown("<div class='sub-title'>기계안전공학 완벽 대비! <br class='mobile-br'>30년 차 출제위원 AI가 <br class='mobile-br'>당신의 답안을 첨삭합니다.</div>", unsafe_allow_html=True)
 
 st.markdown(f"""
@@ -542,6 +577,6 @@ with tab4:
 st.markdown("""
 <hr style="border-color: rgba(255,255,255,0.1); margin-top: 40px;">
 <div style="text-align: center; color: #64748b; font-size: 12px;">
-    © Eunho's Family Assistant. 지연님의 산업안전지도사 합격을 진심으로 기원합니다!
+    © POSCO FUTURE M Assistant. 지연님의 산업안전지도사 합격을 진심으로 기원합니다!
 </div>
 """, unsafe_allow_html=True)
