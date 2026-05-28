@@ -23,7 +23,7 @@ except:
 # ==========================================
 conn = sqlite3.connect('safety_study.db', check_same_thread=False)
 c = conn.cursor()
-c.execute('''CREATE TABLE IF NOT EXISTS users (user_id TEXT PRIMARY KEY, password TEXT)''')
+# 로그인 기능이 없어졌으므로 users 테이블은 더 이상 생성하지 않습니다.
 c.execute('''CREATE TABLE IF NOT EXISTS study_records (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, date TEXT, question TEXT, user_answer TEXT, ai_feedback TEXT)''')
 conn.commit()
 
@@ -115,221 +115,176 @@ st.markdown("""
 # ==========================================
 # [세션 상태 관리]
 # ==========================================
-if 'logged_in' not in st.session_state: st.session_state['logged_in'] = False
-if 'user_id' not in st.session_state: st.session_state['user_id'] = ""
 if 'current_question' not in st.session_state: st.session_state['current_question'] = ""
 if 'ai_feedback' not in st.session_state: st.session_state['ai_feedback'] = ""
 if 'cheer_msg' not in st.session_state: st.session_state['cheer_msg'] = random.choice(ENCOURAGEMENTS)
 
 # ==========================================
-# [화면 구성] 1. 로그인 화면
+# [화면 구성] 메인 학습 화면 (로그인 없이 바로 진입)
 # ==========================================
-if not st.session_state['logged_in']:
-    st.markdown("<div class='neon-title'>POSCO FUTURE M<br>산업안전지도사 AI 센터</div>", unsafe_allow_html=True)
-    st.markdown("<div class='sub-title'>기계안전공학 완벽 대비! 30년 차 출제위원 AI가 당신의 답안을 첨삭합니다.</div>", unsafe_allow_html=True)
+st.markdown("<div class='neon-title'>POSCO FUTURE M<br>산업안전지도사 AI 센터</div>", unsafe_allow_html=True)
+st.markdown("<div class='sub-title'>기계안전공학 완벽 대비! 30년 차 출제위원 AI가 당신의 답안을 첨삭합니다.</div>", unsafe_allow_html=True)
+
+st.markdown(f"""
+<div style="background: rgba(255, 193, 7, 0.15); border-left: 5px solid #ffc107; padding: 15px; border-radius: 10px; margin-bottom: 25px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+    <span style="font-size: 18px; font-weight: bold; color: #fde047;">"{st.session_state['cheer_msg']}"</span>
+</div>
+""", unsafe_allow_html=True)
+
+tab1, tab2, tab3, tab4 = st.tabs(["🔥 빈출 핵심 테마", "🎲 랜덤 기출 풀이", "📚 나의 오답 노트", "🔍 법령 및 KOSHA 가이드"])
+
+# ------------------------------------------
+# [탭 1] 빈출 핵심 테마
+# ------------------------------------------
+with tab1:
+    st.markdown("### 📊 최근 기출 기반 출제 빈도 Top 5")
+    st.info("아래 테마들은 무조건 암기하고 시험장에 들어가셔야 합니다.")
     
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        tab_login, tab_reg = st.tabs(["🔑 로그인", "📝 회원가입"])
-        with tab_login:
-            login_id = st.text_input("수험번호 (아이디)", key="login_id")
-            login_pw = st.text_input("비밀번호", type="password", key="login_pw")
-            st.write("") 
-            if st.button("학습 시작하기", use_container_width=True):
-                c.execute("SELECT * FROM users WHERE user_id=? AND password=?", (login_id, login_pw))
-                if c.fetchone():
-                    st.session_state['logged_in'] = True
-                    st.session_state['user_id'] = login_id
-                    st.session_state['cheer_msg'] = random.choice(ENCOURAGEMENTS)
-                    st.rerun()
-                else:
-                    st.error("정보가 일치하지 않습니다.")
-                    
-        with tab_reg:
-            reg_id = st.text_input("사용할 수험번호", key="reg_id")
-            reg_pw = st.text_input("사용할 비밀번호", type="password", key="reg_pw")
-            st.write("")
-            if st.button("가입 완료하기", use_container_width=True):
-                if reg_id and reg_pw:
+    with st.expander("🥇 1순위: 산업용 로봇 안전 (출제율 최상)"):
+        st.write("- 로봇 교시 작업 시 지침 포함 사항")
+        st.write("- 로봇 운전 중 위험 방지 조치 및 특별안전보건교육")
+        st.write("- 산업용 로봇 구성 요소 및 동작 형태별 분류")
+        st.write("- 자율안전확인 표시 사항")
+        
+    with st.expander("🥈 2순위: 크레인, 양중기 및 와이어로프"):
+        st.write("- 이동식 크레인 재해유형 및 방지대책")
+        st.write("- 양중기 방호장치 종류 (권과방지, 과부하방지 등)")
+        st.write("- 와이어로프 안전계수 계산 및 단말처리 방법")
+        
+    with st.expander("🥉 3순위: 보일러 및 압축기"):
+        st.write("- 보일러 이상증기 발생 (프라이밍, 포밍, 캐리오버) 및 방지대책")
+        st.write("- 보일러 이상연소현상 및 고저수위 조절장치")
+        st.write("- 공기압축기 작업 전 점검사항")
+        
+    with st.expander("🏅 4순위: 지게차 및 하역운반기계"):
+        st.write("- 지게차 방호장치 5가지 및 설명")
+        st.write("- 지게차 낙하물 재해 예방 장치")
+        
+    with st.expander("🏅 5순위: 기계설계 안전 및 재료역학"):
+        st.write("- 기계설계 시 위험요소 및 위험점 6가지")
+        st.write("- 욕조곡선(Bathtub curve) 고장 종류")
+        st.write("- 응력집중계수, 사용응력 및 허용응력, S-N 곡선")
+
+# ------------------------------------------
+# [탭 2] 랜덤 기출 풀이 및 AI 첨삭
+# ------------------------------------------
+with tab2:
+    st.markdown("### ✍️ 실전 모의고사")
+    
+    if st.button("🎲 새로운 기출문제 뽑기", use_container_width=True):
+        st.session_state['current_question'] = random.choice(QUESTIONS)
+        st.session_state['ai_feedback'] = ""
+        st.session_state['cheer_msg'] = random.choice(ENCOURAGEMENTS)
+        st.rerun()
+        
+    if st.session_state['current_question']:
+        st.markdown(f"<div class='question-box'>Q. {st.session_state['current_question']}</div>", unsafe_allow_html=True)
+        
+        user_answer = st.text_area("답안을 작성하세요 (실제 시험처럼 키워드 위주로 작성해보세요)", height=200)
+        
+        if st.button("✨ AI 출제위원에게 정답 보완 및 첨삭 받기", use_container_width=True):
+            if not user_answer.strip():
+                st.warning("답안을 조금이라도 작성해야 첨삭이 가능합니다.")
+            else:
+                with st.spinner("30년 차 출제위원이 답안을 분석하고 모범 답안을 작성 중입니다... ⏳"):
                     try:
-                        c.execute("INSERT INTO users (user_id, password) VALUES (?, ?)", (reg_id, reg_pw))
-                        conn.commit()
-                        st.success("가입 완료! 로그인 탭에서 접속해주세요.")
-                    except sqlite3.IntegrityError:
-                        st.error("이미 존재하는 아이디입니다.")
-                else:
-                    st.warning("모든 칸을 입력해주세요.")
+                        prompt = f"""
+                        당신은 30년 경력의 산업안전지도사(기계안전) 출제 위원입니다.
+                        문제: {st.session_state['current_question']}
+                        수험생의 답변: {user_answer}
+                        
+                        [지시사항]
+                        1. 수험생의 답변을 100점 만점 기준으로 채점하고 짧은 총평을 해주세요.
+                        2. 누락된 핵심 법적 키워드나 공학적 개념을 추가하여 완벽한 모범 답안을 제시해주세요.
+                        3. 수식을 포함한 답변을 작성할 때, 수식 전후에 반드시 개행을 두 번 추가하여 수식이 명확하게 구분되도록 하세요.
+                        4. 전문적이고 명확한 어조(~합니다, ~입니다)를 사용하세요.
+                        """
+                        
+                        url = "https://api.groq.com/openai/v1/chat/completions"
+                        headers = {
+                            "Authorization": f"Bearer {GROQ_API_KEY}",
+                            "Content-Type": "application/json"
+                        }
+                        data = {
+                            "model": "llama-3.1-70b-versatile", # 최신 안정화 모델로 변경
+                            "messages": [{"role": "user", "content": prompt}],
+                            "temperature": 0.3
+                        }
+                        
+                        # timeout 추가 및 에러 상세 출력 강화
+                        response = requests.post(url, headers=headers, json=data, timeout=15)
+                        
+                        if response.status_code == 200:
+                            feedback = response.json()['choices'][0]['message']['content']
+                            st.session_state['ai_feedback'] = feedback
+                            
+                            now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+                            # 로그인 기능이 없으므로 user_id는 '지연'으로 고정하여 저장합니다.
+                            c.execute("INSERT INTO study_records (user_id, date, question, user_answer, ai_feedback) VALUES (?, ?, ?, ?, ?)", 
+                                      ("지연", now, st.session_state['current_question'], user_answer, feedback))
+                            conn.commit()
+                        else:
+                            st.error(f"🚨 API 호출 오류가 발생했습니다. (상태 코드: {response.status_code})")
+                            st.error(f"상세 에러 내용: {response.text}")
+                            st.info("💡 해결 방법: Streamlit Secrets에 입력한 GROQ_API_KEY가 정확한지 확인해주세요.")
+                    except Exception as e:
+                        st.error(f"🚨 통신 오류가 발생했습니다: {e}")
+                        
+        if st.session_state['ai_feedback']:
+            st.markdown(f"<div class='ai-box'><b>💡 [AI 출제위원의 첨삭 결과]</b><br><br>{st.session_state['ai_feedback']}</div>", unsafe_allow_html=True)
+    else:
+        st.info("위의 '새로운 기출문제 뽑기' 버튼을 눌러 학습을 시작하세요.")
 
-# ==========================================
-# [화면 구성] 2. 메인 학습 화면
-# ==========================================
-else:
-    st.markdown(f"<div class='neon-title' style='font-size: 28px;'>{st.session_state['user_id']} 예비 지도사님, 환영합니다!</div>", unsafe_allow_html=True)
+# ------------------------------------------
+# [탭 3] 나의 오답 노트
+# ------------------------------------------
+with tab3:
+    st.markdown("### 📚 내가 작성한 답안 및 AI 피드백 기록")
     
-    st.markdown(f"""
-    <div style="background: rgba(255, 193, 7, 0.15); border-left: 5px solid #ffc107; padding: 15px; border-radius: 10px; margin-bottom: 25px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
-        <span style="font-size: 18px; font-weight: bold; color: #fde047;">"{st.session_state['cheer_msg']}"</span>
-    </div>
-    """, unsafe_allow_html=True)
+    # '지연' 사용자의 기록만 불러옵니다.
+    c.execute("SELECT id, date, question, user_answer, ai_feedback FROM study_records WHERE user_id=? ORDER BY id DESC", ("지연",))
+    records = c.fetchall()
     
-    col_btn1, col_btn2, col_btn3 = st.columns([3, 1, 1])
-    with col_btn3:
-        if st.button("🔒 로그아웃", use_container_width=True):
-            st.session_state['logged_in'] = False
-            st.session_state['user_id'] = ""
-            st.rerun()
-            
+    if not records:
+        st.info("아직 학습 기록이 없습니다. 실전 모의고사를 풀어보세요!")
+    else:
+        for record in records:
+            r_id, date, q, ans, ai = record
+            with st.expander(f"📝 {date} 학습 기록 (클릭하여 펼치기)"):
+                st.markdown(f"**Q. {q}**")
+                st.markdown(f"<div style='background:rgba(255,255,255,0.1); padding:10px; border-radius:5px;'><b>나의 답안:</b><br>{ans}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='background:rgba(16,185,129,0.1); padding:10px; border-radius:5px; margin-top:10px;'><b>AI 피드백:</b><br>{ai}</div>", unsafe_allow_html=True)
+                
+                if st.button("🗑️ 이 기록 삭제", key=f"del_{r_id}"):
+                    c.execute("DELETE FROM study_records WHERE id=?", (r_id,))
+                    conn.commit()
+                    st.rerun()
+
+# ------------------------------------------
+# [탭 4] 법령 및 KOSHA 가이드 외부 링크
+# ------------------------------------------
+with tab4:
+    st.markdown("### 🔍 안전보건 법령 및 KOSHA 가이드")
+    st.write("아래 버튼을 클릭하면 해당 사이트로 이동하여 원문을 검색할 수 있습니다.")
     st.write("")
+    
+    # asdfg.kr (법령 검색) 바로가기 버튼
+    st.markdown("""
+    <a href="https://asdfg.kr" target="_blank" style="text-decoration: none;">
+        <div class="link-btn-container" style="background: linear-gradient(135deg, #00A3E0 0%, #003876 100%); padding: 18px; border-radius: 10px; text-align: center; color: white; font-weight: bold; font-size: 18px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0, 163, 224, 0.4); transition: transform 0.2s;">
+            ⚖️ 안전보건 법령 통합 검색 (asdfg.kr) 바로가기
+        </div>
+    </a>
+    """, unsafe_allow_html=True)
 
-    tab1, tab2, tab3, tab4 = st.tabs(["🔥 빈출 핵심 테마", "🎲 랜덤 기출 풀이", "📚 나의 오답 노트", "🔍 법령 및 KOSHA 가이드"])
-
-    # ------------------------------------------
-    # [탭 1] 빈출 핵심 테마
-    # ------------------------------------------
-    with tab1:
-        st.markdown("### 📊 최근 기출 기반 출제 빈도 Top 5")
-        st.info("아래 테마들은 무조건 암기하고 시험장에 들어가셔야 합니다.")
-        
-        with st.expander("🥇 1순위: 산업용 로봇 안전 (출제율 최상)"):
-            st.write("- 로봇 교시 작업 시 지침 포함 사항")
-            st.write("- 로봇 운전 중 위험 방지 조치 및 특별안전보건교육")
-            st.write("- 산업용 로봇 구성 요소 및 동작 형태별 분류")
-            st.write("- 자율안전확인 표시 사항")
-            
-        with st.expander("🥈 2순위: 크레인, 양중기 및 와이어로프"):
-            st.write("- 이동식 크레인 재해유형 및 방지대책")
-            st.write("- 양중기 방호장치 종류 (권과방지, 과부하방지 등)")
-            st.write("- 와이어로프 안전계수 계산 및 단말처리 방법")
-            
-        with st.expander("🥉 3순위: 보일러 및 압축기"):
-            st.write("- 보일러 이상증기 발생 (프라이밍, 포밍, 캐리오버) 및 방지대책")
-            st.write("- 보일러 이상연소현상 및 고저수위 조절장치")
-            st.write("- 공기압축기 작업 전 점검사항")
-            
-        with st.expander("🏅 4순위: 지게차 및 하역운반기계"):
-            st.write("- 지게차 방호장치 5가지 및 설명")
-            st.write("- 지게차 낙하물 재해 예방 장치")
-            
-        with st.expander("🏅 5순위: 기계설계 안전 및 재료역학"):
-            st.write("- 기계설계 시 위험요소 및 위험점 6가지")
-            st.write("- 욕조곡선(Bathtub curve) 고장 종류")
-            st.write("- 응력집중계수, 사용응력 및 허용응력, S-N 곡선")
-
-    # ------------------------------------------
-    # [탭 2] 랜덤 기출 풀이 및 AI 첨삭
-    # ------------------------------------------
-    with tab2:
-        st.markdown("### ✍️ 실전 모의고사")
-        
-        if st.button("🎲 새로운 기출문제 뽑기", use_container_width=True):
-            st.session_state['current_question'] = random.choice(QUESTIONS)
-            st.session_state['ai_feedback'] = ""
-            st.session_state['cheer_msg'] = random.choice(ENCOURAGEMENTS)
-            st.rerun()
-            
-        if st.session_state['current_question']:
-            st.markdown(f"<div class='question-box'>Q. {st.session_state['current_question']}</div>", unsafe_allow_html=True)
-            
-            user_answer = st.text_area("답안을 작성하세요 (실제 시험처럼 키워드 위주로 작성해보세요)", height=200)
-            
-            if st.button("✨ AI 출제위원에게 정답 보완 및 첨삭 받기", use_container_width=True):
-                if not user_answer.strip():
-                    st.warning("답안을 조금이라도 작성해야 첨삭이 가능합니다.")
-                else:
-                    with st.spinner("30년 차 출제위원이 답안을 분석하고 모범 답안을 작성 중입니다... ⏳"):
-                        try:
-                            prompt = f"""
-                            당신은 30년 경력의 산업안전지도사(기계안전) 출제 위원입니다.
-                            문제: {st.session_state['current_question']}
-                            수험생의 답변: {user_answer}
-                            
-                            [지시사항]
-                            1. 수험생의 답변을 100점 만점 기준으로 채점하고 짧은 총평을 해주세요.
-                            2. 누락된 핵심 법적 키워드나 공학적 개념을 추가하여 완벽한 모범 답안을 제시해주세요.
-                            3. 수식을 포함한 답변을 작성할 때, 수식 전후에 반드시 개행을 두 번 추가하여 수식이 명확하게 구분되도록 하세요.
-                            4. 전문적이고 명확한 어조(~합니다, ~입니다)를 사용하세요.
-                            """
-                            
-                            url = "https://api.groq.com/openai/v1/chat/completions"
-                            headers = {
-                                "Authorization": f"Bearer {GROQ_API_KEY}",
-                                "Content-Type": "application/json"
-                            }
-                            data = {
-                                "model": "llama3-70b-8192",
-                                "messages": [{"role": "user", "content": prompt}],
-                                "temperature": 0.3
-                            }
-                            
-                            response = requests.post(url, headers=headers, json=data)
-                            
-                            if response.status_code == 200:
-                                feedback = response.json()['choices'][0]['message']['content']
-                                st.session_state['ai_feedback'] = feedback
-                                
-                                now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-                                c.execute("INSERT INTO study_records (user_id, date, question, user_answer, ai_feedback) VALUES (?, ?, ?, ?, ?)", 
-                                          (st.session_state['user_id'], now, st.session_state['current_question'], user_answer, feedback))
-                                conn.commit()
-                            else:
-                                st.error("API 호출 오류가 발생했습니다.")
-                        except Exception as e:
-                            st.error(f"통신 오류: {e}")
-                            
-            if st.session_state['ai_feedback']:
-                st.markdown(f"<div class='ai-box'><b>💡 [AI 출제위원의 첨삭 결과]</b><br><br>{st.session_state['ai_feedback']}</div>", unsafe_allow_html=True)
-        else:
-            st.info("위의 '새로운 기출문제 뽑기' 버튼을 눌러 학습을 시작하세요.")
-
-    # ------------------------------------------
-    # [탭 3] 나의 오답 노트
-    # ------------------------------------------
-    with tab3:
-        st.markdown("### 📚 내가 작성한 답안 및 AI 피드백 기록")
-        
-        c.execute("SELECT id, date, question, user_answer, ai_feedback FROM study_records WHERE user_id=? ORDER BY id DESC", (st.session_state['user_id'],))
-        records = c.fetchall()
-        
-        if not records:
-            st.info("아직 학습 기록이 없습니다. 실전 모의고사를 풀어보세요!")
-        else:
-            for record in records:
-                r_id, date, q, ans, ai = record
-                with st.expander(f"📝 {date} 학습 기록 (클릭하여 펼치기)"):
-                    st.markdown(f"**Q. {q}**")
-                    st.markdown(f"<div style='background:rgba(255,255,255,0.1); padding:10px; border-radius:5px;'><b>나의 답안:</b><br>{ans}</div>", unsafe_allow_html=True)
-                    st.markdown(f"<div style='background:rgba(16,185,129,0.1); padding:10px; border-radius:5px; margin-top:10px;'><b>AI 피드백:</b><br>{ai}</div>", unsafe_allow_html=True)
-                    
-                    if st.button("🗑️ 이 기록 삭제", key=f"del_{r_id}"):
-                        c.execute("DELETE FROM study_records WHERE id=?", (r_id,))
-                        conn.commit()
-                        st.rerun()
-
-    # ------------------------------------------
-    # [탭 4] 법령 및 KOSHA 가이드 외부 링크
-    # ------------------------------------------
-    with tab4:
-        st.markdown("### 🔍 안전보건 법령 및 KOSHA 가이드")
-        st.write("아래 버튼을 클릭하면 해당 사이트로 이동하여 원문을 검색할 수 있습니다.")
-        st.write("")
-        
-        # asdfg.kr (법령 검색) 바로가기 버튼
-        st.markdown("""
-        <a href="https://asdfg.kr" target="_blank" style="text-decoration: none;">
-            <div class="link-btn-container" style="background: linear-gradient(135deg, #00A3E0 0%, #003876 100%); padding: 18px; border-radius: 10px; text-align: center; color: white; font-weight: bold; font-size: 18px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0, 163, 224, 0.4); transition: transform 0.2s;">
-                ⚖️ 안전보건 법령 통합 검색 (asdfg.kr) 바로가기
-            </div>
-        </a>
-        """, unsafe_allow_html=True)
-
-        # KOSHA 가이드 바로가기 버튼
-        st.markdown("""
-        <a href="https://portal.kosha.or.kr/archive/resources/tech-support/revision/RevisionNoticePage" target="_blank" style="text-decoration: none;">
-            <div class="link-btn-container" style="background: linear-gradient(135deg, #00B188 0%, #007A5E 100%); padding: 18px; border-radius: 10px; text-align: center; color: white; font-weight: bold; font-size: 18px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0, 177, 136, 0.4); transition: transform 0.2s;">
-                📗 KOSHA GUIDE (안전보건기술지침) 제·개정 공표 바로가기 
-            </div>
-        </a>
-        """, unsafe_allow_html=True)
+    # KOSHA 가이드 바로가기 버튼
+    st.markdown("""
+    <a href="https://portal.kosha.or.kr/archive/resources/tech-support/revision/RevisionNoticePage" target="_blank" style="text-decoration: none;">
+        <div class="link-btn-container" style="background: linear-gradient(135deg, #00B188 0%, #007A5E 100%); padding: 18px; border-radius: 10px; text-align: center; color: white; font-weight: bold; font-size: 18px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0, 177, 136, 0.4); transition: transform 0.2s;">
+            📗 KOSHA GUIDE (안전보건기술지침) 제·개정 공표 바로가기 
+        </div>
+    </a>
+    """, unsafe_allow_html=True)
 
 # ==========================================
 # [푸터]
