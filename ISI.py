@@ -60,51 +60,63 @@ ENCOURAGEMENTS = [
 ]
 
 # ==========================================
-# [CSS] 전문적이고 깔끔한 UI 디자인 (_arrow_right 오류 수정)
+# [CSS] 전역 서울남산체 적용 및 UI 디자인
 # ==========================================
 st.markdown("""
 <style>
+    /* 서울남산체 웹 폰트 불러오기 */
     @font-face {
         font-family: 'SeoulNamsan';
         src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/SeoulNamsanM.woff') format('woff');
         font-weight: normal; font-style: normal;
     }
 
-    /* span, div에 !important를 제거하여 Streamlit 내부 아이콘(화살표 등)이 깨지지 않도록 수정 */
-    .stApp, p, h1, h2, h3, label, input, textarea, button {
+    /* 1. 모든 텍스트 요소에 서울남산체 강제 적용 */
+    html, body, [class*="st-"], p, h1, h2, h3, h4, h5, h6, label, input, textarea, button, li, a, strong, b, div, span {
         font-family: 'SeoulNamsan', sans-serif !important;
     }
+
+    /* 2. 단, Streamlit 내부 아이콘(Material Icons)은 예외 처리하여 _arrow_right 깨짐 방지 */
+    span[data-testid="stIconMaterial"], 
+    .material-icons, 
+    i {
+        font-family: 'Material Icons', 'Material Symbols Rounded', sans-serif !important;
+    }
+
+    /* 배경 및 기본 색상 */
     .stApp { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #f8fafc; }
     
     /* 입력창 디자인 */
     div[data-baseweb="input"] > div, div[data-baseweb="textarea"] > div {
-        background-color: #1e293b !important; border: 2px solid #3b82f6 !important; border-radius: 10px !important;
+        background-color: #1e293b !important; border: 2px solid #00A3E0 !important; border-radius: 10px !important;
     }
     input, textarea { color: #ffffff !important; font-size: 16px !important; }
     
     /* 버튼 디자인 */
     div[data-testid="stButton"] > button, div[data-testid="stFormSubmitButton"] > button {
-        background: linear-gradient(45deg, #2563eb, #1d4ed8) !important; 
+        background: linear-gradient(45deg, #00A3E0, #003876) !important; 
         color: #ffffff !important; font-weight: 900 !important; font-size: 16px !important; 
         border: none !important; border-radius: 10px !important;
-        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.5) !important; transition: all 0.3s ease !important;
+        box-shadow: 0 4px 15px rgba(0, 163, 224, 0.4) !important; transition: all 0.3s ease !important;
     }
-    div[data-testid="stButton"] > button:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(37, 99, 235, 0.7) !important; }
+    div[data-testid="stButton"] > button:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(0, 163, 224, 0.6) !important; }
 
     /* 탭 디자인 */
-    .stTabs [data-baseweb="tab-list"] { gap: 5px; justify-content: center; }
-    .stTabs [data-baseweb="tab"] { background-color: rgba(255,255,255,0.1); border-radius: 8px 8px 0 0; padding: 10px 20px; color: #cbd5e1; }
-    .stTabs [aria-selected="true"] { background-color: rgba(59, 130, 246, 0.3); color: #93c5fd !important; border-bottom: 3px solid #3b82f6; font-weight: bold; }
+    .stTabs [data-baseweb="tab-list"] { gap: 5px; justify-content: center; flex-wrap: wrap; }
+    .stTabs [data-baseweb="tab"] { background-color: rgba(255,255,255,0.1); border-radius: 8px 8px 0 0; padding: 10px 15px; color: #cbd5e1; font-size: 14px; }
+    .stTabs [aria-selected="true"] { background-color: rgba(0, 163, 224, 0.3); color: #7dd3fc !important; border-bottom: 3px solid #00A3E0; font-weight: bold; }
 
+    /* 타이틀 및 박스 디자인 */
     .neon-title {
-        font-size: 45px; font-weight: 900; color: #ffffff; text-align: center;
+        font-size: 40px; font-weight: 900; color: #ffffff; text-align: center;
         margin-top: 20px; margin-bottom: 10px; letter-spacing: 1px;
-        text-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6;
+        text-shadow: 0 0 10px #00A3E0, 0 0 20px #00A3E0;
     }
-    .sub-title { color: #94a3b8; font-size: 18px; margin-bottom: 40px; text-align: center; }
+    .sub-title { color: #94a3b8; font-size: 16px; margin-bottom: 30px; text-align: center; }
     
     .question-box { background: rgba(255,255,255,0.05); border-left: 5px solid #facc15; padding: 20px; border-radius: 10px; font-size: 18px; font-weight: bold; margin-bottom: 20px; line-height: 1.5; }
     .ai-box { background: rgba(16, 185, 129, 0.1); border-left: 5px solid #10b981; padding: 20px; border-radius: 10px; font-size: 16px; line-height: 1.6; margin-top: 20px; white-space: pre-wrap; }
+    .law-ai-box { background: linear-gradient(135deg, rgba(0, 163, 224, 0.1) 0%, rgba(0, 56, 118, 0.2) 100%); border-left: 5px solid #00A3E0; padding: 20px; border-radius: 10px; font-size: 15px; line-height: 1.6; margin-top: 20px; white-space: pre-wrap; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -116,12 +128,13 @@ if 'user_id' not in st.session_state: st.session_state['user_id'] = ""
 if 'current_question' not in st.session_state: st.session_state['current_question'] = ""
 if 'ai_feedback' not in st.session_state: st.session_state['ai_feedback'] = ""
 if 'cheer_msg' not in st.session_state: st.session_state['cheer_msg'] = random.choice(ENCOURAGEMENTS)
+if 'law_ai_result' not in st.session_state: st.session_state['law_ai_result'] = ""
 
 # ==========================================
 # [화면 구성] 1. 로그인 화면
 # ==========================================
 if not st.session_state['logged_in']:
-    st.markdown("<div class='neon-title'>산업안전지도사<br>AI 학습 센터</div>", unsafe_allow_html=True)
+    st.markdown("<div class='neon-title'>POSCO FUTURE M<br>산업안전지도사 AI 센터</div>", unsafe_allow_html=True)
     st.markdown("<div class='sub-title'>기계안전공학 완벽 대비! 30년 차 출제위원 AI가 당신의 답안을 첨삭합니다.</div>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -136,7 +149,7 @@ if not st.session_state['logged_in']:
                 if c.fetchone():
                     st.session_state['logged_in'] = True
                     st.session_state['user_id'] = login_id
-                    st.session_state['cheer_msg'] = random.choice(ENCOURAGEMENTS) # 로그인 시 새로운 응원 메시지
+                    st.session_state['cheer_msg'] = random.choice(ENCOURAGEMENTS)
                     st.rerun()
                 else:
                     st.error("정보가 일치하지 않습니다.")
@@ -160,7 +173,7 @@ if not st.session_state['logged_in']:
 # [화면 구성] 2. 메인 학습 화면
 # ==========================================
 else:
-    st.markdown(f"<div class='neon-title' style='font-size: 30px;'>{st.session_state['user_id']} 예비 지도사님, 환영합니다!</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='neon-title' style='font-size: 28px;'>{st.session_state['user_id']} 예비 지도사님, 환영합니다!</div>", unsafe_allow_html=True)
     
     # 💌 따뜻한 응원 메시지 박스
     st.markdown(f"""
@@ -178,10 +191,11 @@ else:
             
     st.write("")
 
-    tab1, tab2, tab3 = st.tabs(["🔥 빈출 핵심 테마", "🎲 랜덤 기출 풀이", "📚 나의 오답 노트"])
+    # 탭 구성
+    tab1, tab2, tab3, tab4 = st.tabs(["🔥 빈출 핵심 테마", "🎲 랜덤 기출 풀이", "📚 나의 오답 노트", "🔍 법령 및 KOSHA 가이드"])
 
     # ------------------------------------------
-    # [탭 1] 빈출 핵심 테마 (우선순위 정렬)
+    # [탭 1] 빈출 핵심 테마
     # ------------------------------------------
     with tab1:
         st.markdown("### 📊 최근 기출 기반 출제 빈도 Top 5")
@@ -221,7 +235,7 @@ else:
         if st.button("🎲 새로운 기출문제 뽑기", use_container_width=True):
             st.session_state['current_question'] = random.choice(QUESTIONS)
             st.session_state['ai_feedback'] = ""
-            st.session_state['cheer_msg'] = random.choice(ENCOURAGEMENTS) # 문제 뽑을 때마다 응원 멘트 변경
+            st.session_state['cheer_msg'] = random.choice(ENCOURAGEMENTS)
             st.rerun()
             
         if st.session_state['current_question']:
@@ -243,7 +257,7 @@ else:
                             [지시사항]
                             1. 수험생의 답변을 100점 만점 기준으로 채점하고 짧은 총평을 해주세요.
                             2. 누락된 핵심 법적 키워드나 공학적 개념을 추가하여 완벽한 모범 답안을 제시해주세요.
-                            3. 수식을 포함한 답변을 작성할 때, 수식 전후에 반드시 개행을 두 번 추가하여 수식이 명확하게 구분되도록 하세요. (예: \n\n$$ 안전계수 = ... $$\n\n)
+                            3. 수식을 포함한 답변을 작성할 때, 수식 전후에 반드시 개행을 두 번 추가하여 수식이 명확하게 구분되도록 하세요.
                             4. 전문적이고 명확한 어조(~합니다, ~입니다)를 사용하세요.
                             """
                             
@@ -264,7 +278,6 @@ else:
                                 feedback = response.json()['choices'][0]['message']['content']
                                 st.session_state['ai_feedback'] = feedback
                                 
-                                # DB에 기록 저장
                                 now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
                                 c.execute("INSERT INTO study_records (user_id, date, question, user_answer, ai_feedback) VALUES (?, ?, ?, ?, ?)", 
                                           (st.session_state['user_id'], now, st.session_state['current_question'], user_answer, feedback))
@@ -280,7 +293,7 @@ else:
             st.info("위의 '새로운 기출문제 뽑기' 버튼을 눌러 학습을 시작하세요.")
 
     # ------------------------------------------
-    # [탭 3] 나의 오답 노트 (학습 기록)
+    # [탭 3] 나의 오답 노트
     # ------------------------------------------
     with tab3:
         st.markdown("### 📚 내가 작성한 답안 및 AI 피드백 기록")
@@ -303,12 +316,89 @@ else:
                         conn.commit()
                         st.rerun()
 
+    # ------------------------------------------
+    # [탭 4] 법령 및 KOSHA 가이드 검색
+    # ------------------------------------------
+    with tab4:
+        st.markdown("### 🔍 안전보건 법령 스마트 검색 & KOSHA 가이드")
+        
+        # KOSHA 가이드 바로가기 버튼
+        st.markdown("""
+        <a href="https://portal.kosha.or.kr/archive/resources/tech-support/revision/RevisionNoticePage" target="_blank" style="text-decoration: none;">
+            <div style="background: linear-gradient(135deg, #00B188 0%, #007A5E 100%); padding: 15px; border-radius: 10px; text-align: center; color: white; font-weight: bold; font-size: 16px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0, 177, 136, 0.4); transition: transform 0.2s;">
+                📗 KOSHA GUIDE (안전보건기술지침) 제·개정 공표 바로가기 
+            </div>
+        </a>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("법 조항이 기억나지 않을 때 키워드를 검색하면, AI가 관련 법령을 요약해주고 법제처 원문 링크를 제공합니다.")
+        
+        law_keyword = st.text_input("검색어 입력 (예: 밀폐공간, 위험성평가, 관리감독자)", key="law_search_input")
+        
+        if st.button("🔎 법령 AI 검색 및 요약", use_container_width=True):
+            if not law_keyword.strip():
+                st.warning("검색어를 입력해주세요.")
+            else:
+                with st.spinner("AI가 관련 법령(산안법, 시행령, 시행규칙, 안전보건규칙)을 분석 중입니다... ⏳"):
+                    try:
+                        prompt = f"""
+                        당신은 대한민국 산업안전보건법 전문가입니다.
+                        사용자가 '{law_keyword}'에 대해 검색했습니다.
+                        
+                        [지시사항]
+                        1. '{law_keyword}'와 관련된 산업안전보건법, 시행령, 시행규칙, 또는 산업안전보건기준에 관한 규칙의 핵심 조항(몇 조인지)을 명시해주세요.
+                        2. 해당 법령의 핵심 내용을 수험생이 이해하기 쉽게 3~4문단으로 요약해주세요.
+                        3. 현장에서 어떻게 적용해야 하는지(현장 적용 가이드)를 덧붙여주세요.
+                        4. 전문적이고 명확한 어조를 사용하세요.
+                        """
+                        
+                        url = "https://api.groq.com/openai/v1/chat/completions"
+                        headers = {
+                            "Authorization": f"Bearer {GROQ_API_KEY}",
+                            "Content-Type": "application/json"
+                        }
+                        data = {
+                            "model": "llama3-70b-8192",
+                            "messages": [{"role": "user", "content": prompt}],
+                            "temperature": 0.2
+                        }
+                        
+                        response = requests.post(url, headers=headers, json=data)
+                        
+                        if response.status_code == 200:
+                            st.session_state['law_ai_result'] = response.json()['choices'][0]['message']['content']
+                        else:
+                            st.error("API 호출 오류가 발생했습니다.")
+                    except Exception as e:
+                        st.error(f"통신 오류: {e}")
+        
+        # 검색 결과 출력 영역
+        if st.session_state['law_ai_result']:
+            st.markdown(f"""
+            <div class='law-ai-box'>
+                <h4 style="color: #00A3E0; margin-top: 0;">🤖 AI 법령 요약 및 현장 적용 가이드</h4>
+                {st.session_state['law_ai_result']}
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # 법제처 국가법령정보센터 원문 검색 링크 제공
+            encoded_keyword = requests.utils.quote(law_keyword)
+            law_url = f"https://www.law.go.kr/lsSc.do?menuId=1&query={encoded_keyword}"
+            
+            st.markdown(f"""
+            <a href="{law_url}" target="_blank" style="text-decoration: none;">
+                <div style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 15px; border-radius: 10px; text-align: center; color: #334155; font-weight: bold; font-size: 15px; margin-top: 15px; transition: background 0.2s;">
+                    ⚖️ 법제처 국가법령정보센터에서 '{law_keyword}' 원문 검색 결과 보기 🔗
+                </div>
+            </a>
+            """, unsafe_allow_html=True)
+
 # ==========================================
 # [푸터]
 # ==========================================
 st.markdown("""
 <hr style="border-color: rgba(255,255,255,0.1); margin-top: 40px;">
 <div style="text-align: center; color: #64748b; font-size: 12px;">
-    © Eunho's Family Assistant. 지연님의 산업안전지도사 합격을 진심으로 기원합니다!
+    © POSCO FUTURE M Assistant. 지연님의 산업안전지도사 합격을 진심으로 기원합니다!
 </div>
 """, unsafe_allow_html=True)
